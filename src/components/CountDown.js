@@ -6,37 +6,42 @@ import { fontSizes, spacing } from "../utils/sizes";
 const minutesToMillis = (min) => min * 1000 * 60;
 const formatTime = (time) => (time < 10 ? `0${time}` : time);
 
-export const CountDown = ({ minutes = 1, isPaused, onProgress, onEnd }) => {
+export const CountDown = ({ minutes = 0.1, isPaused, onProgress, onEnd }) => {
   const interval = React.useRef(null);
+
+  const [millis, SetMillis] = useState(null);
 
   const countDown = () => {
     SetMillis((time) => {
       if (time === 0) {
         clearInterval(interval.current);
-        onEnd()
         return time;
       }
       const timeLeft = time - 1000;
-      onProgress(timeLeft / minutesToMillis(minutes))
       return timeLeft;
     });
   };
 
   useEffect(() => {
-    SetMillis(minutesToMillis(minutes))
-  }, [minutes])
-
-  const [millis, SetMillis] = useState(minutesToMillis(minutes));
+    SetMillis(minutesToMillis(minutes));
+  }, [minutes]);
 
   useEffect(() => {
-      if (isPaused) {
-          if(interval.current) clearInterval(interval.current);
-          return;
-      }
+    onProgress(millis / minutesToMillis(minutes));
+    if (millis === 0) {
+      onEnd();
+    }
+  }, [millis]);
+
+  useEffect(() => {
+    if (isPaused) {
+      if (interval.current) clearInterval(interval.current);
+      return;
+    }
     interval.current = setInterval(countDown, 1000);
 
     return () => clearInterval(interval.current);
-  }, [isPaused])
+  }, [isPaused]);
 
   const minute = Math.floor(millis / 1000 / 60) % 60;
   const seconds = Math.floor(millis / 1000) % 60;

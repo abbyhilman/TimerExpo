@@ -26,7 +26,7 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
       const interval = setInterval(() => Vibration.vibrate(), 1000);
       setTimeout(() => clearInterval(interval), 10000);
     } else {
-      Vibration.vibrate("10s");
+      Vibration.vibrate(10000);
     }
   };
 
